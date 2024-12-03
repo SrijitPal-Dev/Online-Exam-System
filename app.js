@@ -103,16 +103,16 @@ app.post('/signup', async (req, res) => {
 
     try {
         // Check if the email or name already exists in the database
-        const existingUserByEmail = await User.findOne({ email:email });
-        const existingUserByName = await User.findOne({ firstName:firstName, lastName:lastName });
+        const existingUserByEmail = await User.findOne({ email: email });
+        const existingUserByName = await User.findOne({ firstName: firstName, lastName: lastName });
 
         // If email or name is already taken, return an error message
         if (existingUserByEmail) {
-            return res.render('sign-up', {errorMessage: 'This email is already in use. Please choose another one.'});
+            return res.render('sign-up', { errorMessage: 'This email is already in use. Please choose another one.' });
         }
 
         if (existingUserByName) {
-            return res.render('sign-up', {errorMessage: 'A user with the same name already exists. Please use a different name.'});
+            return res.render('sign-up', { errorMessage: 'A user with the same name already exists. Please use a different name.' });
         }
 
         // Create a new user object
@@ -205,14 +205,18 @@ app.get('/exam', async (req, res) => {
         const schedules = await Schedule.find({}).lean();
 
         // Get the current date and time
-        const currentTime = new Date();
+        const currentTime = new Date();  // Gets the current local time, we'll convert this to UTC for comparison.
 
-        // Filter schedules to include only those whose start and end times are relevant to the current time
+        // Convert current time to UTC for comparison
+        const currentTimeUtc = new Date(currentTime.toISOString()); // This gives the UTC time.
+
         const recentSchedules = schedules.filter(schedule => {
-            const startTime = new Date(`${schedule.date}T${schedule.startTime}:00`);
-            const endTime = new Date(`${schedule.date}T${schedule.endTime}:00`);
+            // Create start and end times in UTC by using full date and time (without manually adding 'Z')
+            const startTimeUtc = new Date(schedule.startTime); // startTime is already in UTC format, no need to add 'Z' again
+            const endTimeUtc = new Date(schedule.endTime); // endTime is already in UTC format, no need to add 'Z' again
 
-            return currentTime >= startTime && currentTime <= endTime;
+            // Compare with the current UTC time
+            return currentTimeUtc >= startTimeUtc && currentTimeUtc <= endTimeUtc;
         });
 
         // Check if the user has already attempted this quiz
@@ -327,25 +331,27 @@ app.get('/list', async (req, res) => {
         const userId = req.session.userId; // User ID from session
         const user = await User.findById(userId);
         const quizScores = user.attemptedQuizzes;
-        
 
-        // Get the current date and time
-        const currentTime = new Date();
+        const currentTime = new Date();  // Gets the current local time, we'll convert this to UTC for comparison.
 
-        // Filter schedules to include only those whose start and end times are relevant to the current time
+        // Convert current time to UTC for comparison
+        const currentTimeUtc = new Date(currentTime.toISOString()); // This gives the UTC time.
+
         const recentSchedules = schedules.filter(schedule => {
-            const startTime = new Date(`${schedule.date}T${schedule.startTime}:00`);
-            const endTime = new Date(`${schedule.date}T${schedule.endTime}:00`);
+            // Create start and end times in UTC by using full date and time (without manually adding 'Z')
+            const startTimeUtc = new Date(schedule.startTime); // startTime is already in UTC format, no need to add 'Z' again
+            const endTimeUtc = new Date(schedule.endTime); // endTime is already in UTC format, no need to add 'Z' again
 
-            return currentTime >= startTime && currentTime <= endTime;
+            // Compare with the current UTC time
+            return currentTimeUtc >= startTimeUtc && currentTimeUtc <= endTimeUtc;
         });
+
+
         console.log(recentSchedules);
         // If no schedules match the current time, pass an empty array
         if (recentSchedules.length === 0) {
             console.log('No exams available at this time');
         }
-        console.log(quizScores);
-
         // Render the 'list' page with filtered recentSchedules
         res.render('list', { quizScores, recentSchedules, studentName: req.session.studentName });
     } catch (error) {
@@ -390,14 +396,21 @@ app.post('/schedule-exam', async (req, res) => {
     // Generate a unique quizId
     const quizId = uuidv4();
 
+    const startDateTime = new Date(`${date}T${startTime}:00`);  // Assuming startTime and date are in the local time zone
+    const endDateTime = new Date(`${date}T${endTime}:00`);
+
+    // Convert to UTC by calling toISOString() (it will store as UTC in ISO format)
+    const startTimeUtc = startDateTime.toISOString();
+    const endTimeUtc = endDateTime.toISOString();
+
     // Create a new Schedule object including the quizId
     const newschedule = new Schedule({
         quizId, // Add the generated quizId
         subject,
         questions,
         date,
-        startTime,
-        endTime
+        startTime: startTimeUtc,  // Store in UTC
+        endTime: endTimeUtc       // Store in UTC
     });
 
     try {
