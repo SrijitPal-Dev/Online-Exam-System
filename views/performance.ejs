@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Performance</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="shortcut icon" href="/Logo.jpg" type="image/x-icon">
+    <style>
+        /* Base styling */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f9fc;
+            margin: 0;
+            padding-top: 80px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        h2 {
+            color: #007bff;
+            text-align: center;
+            margin-bottom: 20px;
+            font-weight: bold;
+            font-size: 2rem;
+        }
+
+        /* Search input styling */
+        .search-input {
+            width: 100%;
+            padding: 10px;
+            font-size: 1rem;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            transition: box-shadow 0.3s ease;
+        }
+
+        .search-input:focus {
+            box-shadow: 0 0 8px rgba(0, 123, 255, 0.5);
+        }
+
+        /* Student list styling */
+        .student-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .student-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease, box-shadow 0.3s ease;
+        }
+
+        .student-item:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .student-name {
+            font-weight: bold;
+            color: #333;
+            font-size: 1.1rem;
+        }
+
+        /* Responsive layout */
+        @media (max-width: 576px) {
+            .student-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar Component -->
+    <%- include('components/navbar') %>
+
+        <div class="container">
+            <h2>Enrolled Students</h2>
+            <input type="text" class="search-input" id="searchInput" placeholder="Search students by name...">
+
+            <!-- Student List -->
+            <div class="student-list" id="studentList">
+                <% if (students.length> 0) { %>
+                    <% students.forEach(student=> { %>
+                        <div class="student-item">
+                            <span class="student-name">
+                                <%= student.firstName %>
+                                    <%= student.lastName %>
+                            </span>
+                            <span>Roll No: <%= student.rollNumber %></span>
+                        </div>
+                        <% }) %>
+                            <% } else { %>
+                                <div class="student-item">
+                                    <span>No students found.</span>
+                                </div>
+                                <% } %>
+            </div>
+        </div>
+
+        <!-- Bootstrap JS and jQuery -->
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+        <script>
+            // Search function
+            const searchInput = document.getElementById('searchInput');
+            const studentItems = document.querySelectorAll('.student-item');
+
+            searchInput.addEventListener('input', function () {
+                const searchTerm = this.value.toLowerCase();
+                studentItems.forEach(item => {
+                    const studentName = item.querySelector('.student-name').textContent.toLowerCase();
+                    if (studentName.includes(searchTerm)) {
+                        item.style.display = '';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            });
+            for (let buttonId in buttonUrlMap) {
+                const button = document.querySelector(buttonId);
+                button.addEventListener('click', function () {
+                    window.location.href = buttonUrlMap[buttonId];
+                });
+            }
+        </script>
+</body>
+
+</html>
