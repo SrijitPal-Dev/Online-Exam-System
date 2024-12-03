@@ -214,7 +214,7 @@
             const quizScores = <%- JSON.stringify(quizScores) %>;
 
             // Prepare data for the chart
-            const labels = quizScores.map(quiz => quiz.subject);  // Use the subject name instead of quizId
+            const labels = quizScores.map((quiz, index) => `${quiz.subject} (#${index + 1})`);
             const scores = quizScores.map(quiz => quiz.score);
             const totalScores = quizScores.map(quiz => quiz.totalScore);
 

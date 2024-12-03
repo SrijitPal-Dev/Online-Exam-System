@@ -344,6 +344,7 @@ app.get('/list', async (req, res) => {
         if (recentSchedules.length === 0) {
             console.log('No exams available at this time');
         }
+        console.log(quizScores);
 
         // Render the 'list' page with filtered recentSchedules
         res.render('list', { quizScores, recentSchedules, studentName: req.session.studentName });
