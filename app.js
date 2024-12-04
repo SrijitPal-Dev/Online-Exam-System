@@ -82,7 +82,7 @@ app.get('/login', (req, res) => {
     res.render('login');
 });
 
-app.get('/homepage', async (req,res) => {
+app.get('/homepage', async (req, res) => {
     try {
         const userId = req.session.userId; // User ID from session
 
@@ -227,14 +227,16 @@ app.get('/exam', async (req, res) => {
 
         // Convert current time to UTC for comparison
         const currentTimeUtc = new Date(currentTime.toISOString()); // This gives the UTC time.
-
+        const IST_OFFSET = 5.5 * 60 * 60 * 1000; // 5 hours 30 minutes in milliseconds
+        const currentTimeIST = new Date(currentTimeUtc.getTime() + IST_OFFSET);
+        console.log(currentTimeIST);
         const recentSchedules = schedules.filter(schedule => {
             // Create start and end times in UTC by using full date and time (without manually adding 'Z')
             const startTimeUtc = new Date(schedule.startTime); // startTime is already in UTC format, no need to add 'Z' again
             const endTimeUtc = new Date(schedule.endTime); // endTime is already in UTC format, no need to add 'Z' again
 
             // Compare with the current UTC time
-            return currentTimeUtc >= startTimeUtc && currentTimeUtc <= endTimeUtc;
+            return currentTimeIST >= startTimeUtc && currentTimeIST <= endTimeUtc;
         });
 
         // Check if the user has already attempted this quiz
@@ -353,15 +355,14 @@ app.get('/list', async (req, res) => {
         const currentTime = new Date();  // Gets the current local time, we'll convert this to UTC for comparison.
 
         // Convert current time to UTC for comparison
-        const currentTimeUtc = new Date(currentTime.toISOString()); // This gives the UTC time.
-
+        //const currentTimeUtc = new Date(currentTime.toISOString()); // This gives the UTC time.
+        console.log(currentTime)
         const recentSchedules = schedules.filter(schedule => {
             // Create start and end times in UTC by using full date and time (without manually adding 'Z')
             const startTimeUtc = new Date(schedule.startTime); // startTime is already in UTC format, no need to add 'Z' again
             const endTimeUtc = new Date(schedule.endTime); // endTime is already in UTC format, no need to add 'Z' again
-
             // Compare with the current UTC time
-            return currentTimeUtc >= startTimeUtc && currentTimeUtc <= endTimeUtc;
+            return currentTime >= startTimeUtc && currentTime <= endTimeUtc;
         });
 
 
