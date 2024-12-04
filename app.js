@@ -82,6 +82,24 @@ app.get('/login', (req, res) => {
     res.render('login');
 });
 
+app.get('/homepage', async (req,res) => {
+    try {
+        const userId = req.session.userId; // User ID from session
+
+        const user = await User.findById(userId);
+
+        if (user.category === 'student') {
+            return res.redirect('/list');
+        } else if (user.category === 'teacher') {
+            return res.redirect('/teacher-dashboard');
+        } else {
+            return res.status(400).send('Invalid user category'); // Handle unexpected category
+        }
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send('Internal server error'); // Generic error message
+    }
+});
 
 
 app.get('/performance', async (req, res) => {
