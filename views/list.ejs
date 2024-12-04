@@ -172,9 +172,12 @@
                                         </h5>
                                         <p>Best of Luck for the Exam</p>
                                         <% if (typeof errorMessage !=='undefined' ) { %>
-                                            <div class="alert alert-danger text-center custom-alert" role="alert">
-                                                <%= errorMessage %>
-                                            </div>
+                                            <script type="text/javascript">
+                                                window.onload = function() {
+                                                    // Show the alert after the page has fully loaded
+                                                    alert('<%= errorMessage %>');
+                                                }
+                                            </script>
                                             <% } %>
                                                 <button class="btn btn-primary"
                                                     onclick="window.location.href='/exam?subject=<%= schedule.subject %>&quizId=<%= schedule.quizId %>&questions=<%= schedule.questions %>'">
